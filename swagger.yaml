@@ -1,0 +1,277 @@
+openapi: 3.0.3
+info:
+  title: Swagger PetStore - OpenAPI 3.0
+  description: |-
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempor volutpat lectus. Cras pretium pulvinar lacus, vitae lacinia nisi vehicula vel. Nunc vitae augue lorem. Cras cursus enim et tellus congue, ac cursus tellus placerat. In ac dictum lectus. Curabitur sodales magna sed lobortis cursus. Suspendisse volutpat, ante eu suscipit rhoncus, sapien enim aliquet sem, vel ultrices neque purus volutpat velit. Etiam rutrum risus nunc, pulvinar ultrices nunc accumsan in. Ut tincidunt quam dui, vitae mollis tortor congue quis. Aliquam tincidunt aliquam pretium.
+  version: 0.0.1
+servers:
+  - url: http://localhost:5150
+tags:
+  - name: pets
+    description: Everything about your Pets
+security:
+  - api_key: []
+paths:
+  /pet/all:
+    get:
+      tags:
+        - pets
+      summary: Returns a list of all pets
+      description: Returns a list of all pets
+      operationId: getAllPets
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PetListItem'
+        '401':
+          description: Unauthorized
+  /pet/kinds:
+    get:
+      tags:
+        - pets
+      summary: Returns a list of pet kinds
+      description: Returns a list of pet kinds
+      operationId: getPetKinds
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PetKind'
+        '401':
+          description: Unauthorized
+  /pet/{petId}:
+    get:
+      tags:
+        - pets
+      summary: Get pet by petId
+      description: Get pet by petId
+      operationId: getPetByPetId
+      parameters:
+        - name: petId
+          in: path
+          description: petId of the pet to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+        '401':
+          description: Unauthorized
+      security:
+        - api_key:
+            - write:pets
+            - read:pets
+    put:
+      tags:
+        - pets
+      summary: Updates a pet by petId
+      description: Updates a pet by petId
+      operationId: updatePet
+      parameters:
+        - name: petId
+          in: path
+          description: petId of the pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetData'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+        '401':
+          description: Unauthorized
+      security:
+        - api_key:
+            - write:pets
+            - read:pets
+    delete:
+      tags:
+        - pets
+      summary: Deletes a pet
+      description: delete a pet
+      operationId: deletePet
+      parameters:
+        - name: petId
+          in: path
+          description: petId of the pet to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Pet not found
+        '401':
+          description: Unauthorized
+      security:
+        - api_key:
+            - write:pets
+            - read:pets
+  /pet:
+    post:
+      tags:
+        - pets
+      summary: Add a new pet to the store
+      description: Add a new pet to the store
+      operationId: addPet
+      requestBody:
+        description: Create a new pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetData'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '401':
+          description: Unauthorized
+      security:
+        - api_key:
+            - write:pets
+            - read:pets
+components:
+  schemas:
+    Pet:
+      required:
+        - petId
+        - petName
+        - age
+        - kind
+        - addedDate
+        - healthProblems
+      type: object
+      properties:
+        petId:
+          type: integer
+          format: int64
+          example: 42
+        petName:
+          type: string
+          example: doggie
+        age:
+          type: integer
+          format: int64
+          example: 3
+        kind:
+          type: integer
+          format: int64
+          example: 1
+        notes:
+          type: string
+          example: A pretty cat
+        addedDate:
+          type: string
+          example: '2022-10-25'
+        healthProblems:
+          type: boolean
+          example: false
+    PetData:
+      required:
+        - petName
+        - age
+        - kind
+        - addedDate
+        - healthProblems
+      type: object
+      properties:
+        petName:
+          type: string
+          example: doggie
+        age:
+          type: integer
+          format: int64
+          example: 3
+        kind:
+          type: integer
+          format: int64
+          example: 1
+        notes:
+          type: string
+          example: A pretty cat
+        addedDate:
+          type: string
+          example: '2022-10-25'
+        healthProblems:
+          type: boolean
+          example: false
+    PetListItem:
+      required:
+        - petId
+        - petName
+        - kind
+        - addedDate
+      type: object
+      properties:
+        petId:
+          type: integer
+          format: int64
+          example: 42
+        petName:
+          type: string
+          example: doggie
+        kind:
+          type: integer
+          format: int64
+          example: 1
+        addedDate:
+          type: string
+          example: 2022-10-25
+    PetKind:
+      required:
+        - value
+        - displayName
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int64
+          example: 1
+        displayName:
+          type: string
+          example: Cat
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: X-Api-Key
+      in: header
